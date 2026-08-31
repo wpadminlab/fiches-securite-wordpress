@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fiches-securite-wordpress.onrender.com/sitemap.xml
