@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les 48 heures après un piratage WordPress — fiche de terrain</title>
+<meta name="description" content="Procédure pas à pas pour les 48 premières heures après un piratage WordPress : isolement, diagnostic, nettoyage, remise en service.">
+<link rel="canonical" href="https://fiches-securite-wordpress.onrender.com/fiche-piratage">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #fdf6ee;
+    --ink: #1c1c1c;
+    --bordeaux: #7a1b2e;
+    --bordeaux-light: #9e2a40;
+    --muted: #6b5a52;
+    --rule: #d9c9bf;
+    --bg-block: #f5ece3;
+  }
+  body { background: var(--cream); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; line-height: 1.75; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  .breadcrumb { font-size: .8rem; font-family: system-ui, sans-serif; color: var(--muted); margin-bottom: 1.5rem; }
+  .breadcrumb a { color: var(--bordeaux); text-decoration: none; }
+  .kicker { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bordeaux); font-family: system-ui, sans-serif; margin-bottom: .6rem; }
+  h1 { font-size: 1.75rem; line-height: 1.25; color: var(--bordeaux); font-weight: 700; margin-bottom: 1.25rem; }
+  h2 { font-size: 1.15rem; color: var(--bordeaux); margin: 2rem 0 .75rem; font-weight: 700; }
+  p { margin-bottom: 1rem; font-size: 1rem; }
+  ul { margin: .75rem 0 1rem 1.4rem; }
+  li { margin-bottom: .4rem; }
+  .block { background: var(--bg-block); border-left: 3px solid var(--bordeaux); padding: .9rem 1.1rem; margin: 1.5rem 0; border-radius: 0 4px 4px 0; }
+  .block p { margin: 0; font-size: .95rem; }
+  a { color: var(--bordeaux-light); }
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+  footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); font-family: system-ui, sans-serif; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+  footer a { color: var(--bordeaux); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="breadcrumb"><a href="/">Fiches securite WordPress</a> / Les 48 heures apres un piratage</p>
+  <p class="kicker">Fiche 01 · Urgence</p>
+  <h1>Les 48 heures apres un piratage</h1>
+
+  <p>Un site compromis ne pardonne pas l'improvisation. Chaque heure qui passe, le code malveillant fait son travail : il ouvre des portes de secours, exfiltre des donnees, envoie du spam ou redirige vos visiteurs vers des pages toxiques. Cette fiche presente la marche a suivre telle qu'on l'applique sur le terrain, dans l'ordre.</p>
+
+  <h2>Premiere heure : isoler</h2>
+  <p>Avant de toucher quoi que ce soit, coupez le robinet. Si votre hebergeur le permet, passez le site en mode maintenance depuis le panneau de controle, ou bloquez l'acces public via le fichier <code>.htaccess</code>. L'objectif est simple : personne ne doit pouvoir acceder au site pendant que vous travaillez dessus, ni en visite normale ni via une porte derobee.</p>
+  <p>Ensuite, changez immediatement tous les mots de passe : WordPress, FTP, base de donnees, panneau d'hebergement, email lie au compte. Ne reutilisez aucun mot de passe existant, meme ceux que vous pensiez solides. Un piratage implique souvent que l'attaquant a deja eu acces a l'un d'eux.</p>
+
+  <div class="block"><p>Ne supprimez aucun fichier avant d'avoir fait une sauvegarde complete de l'etat compromis. Cette copie servira a analyser le mode operatoire et a verifier que le nettoyage est complet.</p></div>
+
+  <h2>Premiere a quatrieme heure : diagnostiquer</h2>
+  <p>Consultez les logs du serveur (access.log, error.log) pour les 48 heures precedant le piratage detecte. Cherchez des requetes inhabituelles : acces a des fichiers PHP dans des repertoires normalement statiques, volume anormal de requetes POST vers wp-admin ou vers des fichiers uploads. Notez les adresses IP concernees.</p>
+  <ul>
+    <li>Verifiez les fichiers modifies recemment via FTP ou SSH : <code>find . -name "*.php" -newer ./wp-config.php</code></li>
+    <li>Examinez wp-config.php, .htaccess, et les fichiers du theme actif en priorite</li>
+    <li>Listez les comptes administrateurs : un pirate en cree souvent un nouveau discret</li>
+    <li>Verifiez les plugins et themes inactifs : ils sont souvent le vecteur d'entree</li>
+  </ul>
+
+  <h2>Quatrieme a douzieme heure : nettoyer</h2>
+  <p>Remplacez les fichiers du coeur WordPress par une copie fraiche telechargee depuis wordpress.org. Ne copiez pas vos fichiers existants, remplacez-les. Faites de meme pour chaque plugin et theme, en les reinstallant depuis leurs sources officielles.</p>
+  <p>Pour la base de donnees, cherchez les injections dans les champs texte : URL suspectes, balises script, encodages base64. Les tables wp_options et wp_posts sont les plus souvent touchees.</p>
+
+  <h2>Douzieme a quarante-huitieme heure : surveiller et consolider</h2>
+  <p>Une fois le site remis en service, ne baissez pas la garde. Activez la journalisation des connexions admin, mettez en place une verification d'integrite des fichiers et configurez des alertes par email pour toute modification de fichier core. Changez aussi les cles de securite WordPress dans wp-config.php : elles invalident toutes les sessions en cours, y compris celles de l'attaquant.</p>
+
+  <hr class="rule">
+  <p>Pour aller plus loin sur la reprise apres incident et le nettoyage complet, consultez le guide detaille sur <a href="https://wpadminlab.com/site-wordpress-pirate-nettoyer-securiser/">wpadminlab.com : site WordPress pirate, nettoyer et securiser</a>.</p>
+
+  <footer>
+    <span><a href="/">Retour aux fiches</a></span>
+    <span>WP Admin Lab &middot; 2026</span>
+  </footer>
+</div>
+</body>
+</html>
