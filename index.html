@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiches sécurité WordPress — méthodes de terrain</title>
+<meta name="description" content="Des fiches pratiques sur la sécurité WordPress : que faire après un piratage, comment durcir son site sans plugin. Par WP Admin Lab.">
+<link rel="canonical" href="https://fiches-securite-wordpress.onrender.com/">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #fdf6ee;
+    --ink: #1c1c1c;
+    --bordeaux: #7a1b2e;
+    --bordeaux-light: #9e2a40;
+    --muted: #6b5a52;
+    --rule: #d9c9bf;
+  }
+  body { background: var(--cream); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; line-height: 1.7; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  header.mast { margin-bottom: 2.5rem; }
+  .kicker { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bordeaux); font-family: system-ui, sans-serif; margin-bottom: .6rem; }
+  h1 { font-size: 2rem; line-height: 1.2; color: var(--bordeaux); font-weight: 700; margin-bottom: .9rem; }
+  h1 a { color: inherit; text-decoration: none; }
+  .standfirst { color: var(--muted); font-size: 1rem; }
+  .standfirst a { color: var(--bordeaux); }
+  hr.rule { border: none; border-top: 2px solid var(--bordeaux); margin: 2rem 0 1.5rem; }
+  .section-label { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-family: system-ui, sans-serif; margin-bottom: 1rem; }
+  ul.entries { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+  ul.entries li { display: flex; gap: 1.25rem; align-items: flex-start; padding-bottom: 1.5rem; border-bottom: 1px solid var(--rule); }
+  ul.entries li:last-child { border-bottom: none; }
+  .no { font-size: 1.4rem; font-weight: 700; color: var(--bordeaux); min-width: 2rem; line-height: 1; padding-top: .15rem; }
+  ul.entries h2 { font-size: 1.1rem; margin-bottom: .35rem; }
+  ul.entries h2 a { color: var(--bordeaux-light); text-decoration: none; }
+  ul.entries h2 a:hover { text-decoration: underline; }
+  ul.entries p { font-size: .95rem; color: var(--muted); }
+  .intro { margin-bottom: 2rem; font-size: 1rem; line-height: 1.75; }
+  footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); font-family: system-ui, sans-serif; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+  footer a { color: var(--bordeaux); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast">
+  <p class="kicker">Ressources pratiques · Sécurité WordPress</p>
+  <h1><a href="/">Fiches sécurité WordPress</a></h1>
+  <p class="standfirst">Des procédures écrites pour les moments où on ne peut pas se permettre de chercher. Conçues par l'équipe de <a href="https://wpadminlab.com/">WP Admin Lab</a>.</p>
+</header>
+
+<p class="intro">
+  Un piratage, une faille détectée trop tard, une configuration qui laisse passer trop de choses : la sécurité WordPress réserve souvent ses surprises au pire moment. Ces fiches condensent ce qu'on applique sur le terrain, sans détour. Chaque procédure est séquencée pour pouvoir agir vite, même sous pression. On couvre deux angles complémentaires : la réponse à chaud quand le mal est déjà fait, et la prévention technique qui ne demande pas d'installer un plugin supplémentaire.
+</p>
+
+<hr class="rule">
+<p class="section-label">Les fiches</p>
+<ul class="entries">
+  <li><span class="no">01</span><div>
+    <h2><a href="/fiche-piratage">Les 48 heures après un piratage</a></h2>
+    <p>Chaque heure compte. La marche à suivre heure par heure pour limiter les dégâts, reprendre le contrôle et barrer la route aux récidives.</p>
+  </div></li>
+  <li><span class="no">02</span><div>
+    <h2><a href="/fiche-securisation">Durcir sans plugin : WAF, en-têtes et CSP</a></h2>
+    <p>Comment ajouter des couches de protection solides directement dans la configuration du serveur, sans multiplier les extensions.</p>
+  </div></li>
+</ul>
+
+<footer>
+  <span>Fiches rédigées par l'équipe <a href="https://wpadminlab.com/">wpadminlab.com</a></span>
+  <span>Contenu original &middot; 2026 &middot; WP Admin Lab</span>
+</footer>
+</div>
+</body>
+</html>
