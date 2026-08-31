@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Durcir WordPress sans plugin : WAF, en-têtes HTTP et CSP</title>
+<meta name="description" content="Comment sécuriser un site WordPress sans plugin supplémentaire : pare-feu applicatif, en-têtes de sécurité, politique de contenu CSP. Guide technique terrain.">
+<link rel="canonical" href="https://fiches-securite-wordpress.onrender.com/fiche-securisation">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #fdf6ee;
+    --ink: #1c1c1c;
+    --bordeaux: #7a1b2e;
+    --bordeaux-light: #9e2a40;
+    --muted: #6b5a52;
+    --rule: #d9c9bf;
+    --bg-block: #f5ece3;
+    --bg-code: #ede0d4;
+  }
+  body { background: var(--cream); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; line-height: 1.75; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  .breadcrumb { font-size: .8rem; font-family: system-ui, sans-serif; color: var(--muted); margin-bottom: 1.5rem; }
+  .breadcrumb a { color: var(--bordeaux); text-decoration: none; }
+  .kicker { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bordeaux); font-family: system-ui, sans-serif; margin-bottom: .6rem; }
+  h1 { font-size: 1.75rem; line-height: 1.25; color: var(--bordeaux); font-weight: 700; margin-bottom: 1.25rem; }
+  h2 { font-size: 1.15rem; color: var(--bordeaux); margin: 2rem 0 .75rem; font-weight: 700; }
+  p { margin-bottom: 1rem; font-size: 1rem; }
+  ul { margin: .75rem 0 1rem 1.4rem; }
+  li { margin-bottom: .4rem; }
+  code { font-family: 'Courier New', monospace; background: var(--bg-code); padding: .1em .35em; border-radius: 3px; font-size: .9em; }
+  pre { background: var(--bg-code); padding: 1rem 1.1rem; border-radius: 4px; overflow-x: auto; font-size: .88rem; margin: 1rem 0 1.5rem; line-height: 1.5; }
+  .block { background: var(--bg-block); border-left: 3px solid var(--bordeaux); padding: .9rem 1.1rem; margin: 1.5rem 0; border-radius: 0 4px 4px 0; }
+  .block p { margin: 0; font-size: .95rem; }
+  a { color: var(--bordeaux-light); }
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+  footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); font-family: system-ui, sans-serif; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+  footer a { color: var(--bordeaux); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="breadcrumb"><a href="/">Fiches securite WordPress</a> / Durcir sans plugin</p>
+  <p class="kicker">Fiche 02 · Prevention</p>
+  <h1>Durcir sans plugin : WAF, en-tetes et CSP</h1>
+
+  <p>Chaque plugin installe est une surface d'attaque. L'approche que l'on prefere : poser les fondations de securite directement dans la configuration du serveur, avant meme que WordPress ne charge. Ce que le serveur gere, les attaquants ne peuvent pas le contourner via une injection dans le CMS.</p>
+
+  <h2>Le pare-feu applicatif (WAF) au niveau serveur</h2>
+  <p>Sur Apache, ModSecurity est disponible sur la plupart des hebergements mutualises. Il filtre les requetes malformees et les signatures d'attaque connues (injections SQL, tentatives de traversee de repertoire, scanners automatiques) avant qu'elles n'atteignent PHP. Activez-le depuis votre panneau et selectionnez un jeu de regles OWASP de base.</p>
+  <p>Sur Nginx ou en frontal Cloudflare, vous disposez de regles WAF equivalentes. Cloudflare en offre meme un ensemble gratuit qui bloque les attaques les plus communes sur WordPress, dont les tentatives en masse sur xmlrpc.php et wp-login.php.</p>
+
+  <div class="block"><p>Bloquer xmlrpc.php quand vous ne l'utilisez pas est l'une des mesures les plus efficaces. Ajoutez dans .htaccess : <code>&lt;Files xmlrpc.php&gt; Order Deny,Allow Deny from all &lt;/Files&gt;</code></p></div>
+
+  <h2>Les en-tetes de securite HTTP</h2>
+  <p>Ces en-tetes s'ajoutent dans .htaccess (Apache) ou dans la configuration Nginx. Ils instruisent le navigateur sur ce qu'il est autorise a faire avec votre contenu.</p>
+  <ul>
+    <li><strong>X-Frame-Options: SAMEORIGIN</strong> interdit l'inclusion de votre site dans une iframe tierce, contre le clickjacking</li>
+    <li><strong>X-Content-Type-Options: nosniff</strong> empeche le navigateur de reinterpreter le type MIME d'un fichier</li>
+    <li><strong>Referrer-Policy: strict-origin-when-cross-origin</strong> limite les informations transmises lors des clics sortants</li>
+    <li><strong>Permissions-Policy</strong> desactive les API navigateur que vous n'utilisez pas (camera, microphone, geolocation)</li>
+  </ul>
+  <pre>Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"</pre>
+
+  <h2>La politique de securite du contenu (CSP)</h2>
+  <p>La CSP est l'en-tete le plus puissant, et le plus delicat a configurer. Elle definit precisement d'ou votre page peut charger des scripts, des styles, des images. Une CSP bien rediglee rend les attaques XSS quasiment inoperantes, meme si du contenu malveillant parvient a s'injecter dans votre base de donnees.</p>
+  <p>La difficulte vient des extensions WordPress, qui chargent souvent des ressources depuis des domaines tiers (Google Fonts, CDN analytiques, boutons sociaux). La methode la plus sure : activez d'abord en mode <code>Content-Security-Policy-Report-Only</code>, observez les violations dans les logs navigateur pendant une semaine, puis construisez votre politique sur la base des ressources reellement utilisees.</p>
+
+  <div class="block"><p>Commencez permissif, puis resserrez. Une CSP trop stricte casse votre site en silence (images manquantes, boutons inactifs) sans avertissement visible.</p></div>
+
+  <hr class="rule">
+  <p>Le guide complet avec les configurations .htaccess et les exemples CSP pour WordPress est disponible sur <a href="https://wpadminlab.com/securiser-wordpress-waf-headers-csp-guide-complet-2026/">wpadminlab.com : securiser WordPress, WAF, headers et CSP</a>. Pour diagnostiquer l'etat de securite de votre installation avant de configurer quoi que ce soit, le <a href="https://wpadminlab.com/scan-wordpress/">scan WordPress gratuit</a> est un bon point de depart.</p>
+
+  <footer>
+    <span><a href="/">Retour aux fiches</a></span>
+    <span>WP Admin Lab &middot; 2026</span>
+  </footer>
+</div>
+</body>
+</html>
